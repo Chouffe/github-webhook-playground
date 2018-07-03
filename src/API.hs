@@ -33,6 +33,7 @@ import           Internal                 (Environment (..))
 data Config
     = Config
         { cPort        :: Int
+        , cSecretToken :: String
         , cEnvironment :: Environment
         , cGithub      :: Github.Config
         , cLogger      :: Logger.Config
@@ -43,10 +44,12 @@ fetchConfig :: IO Config
 fetchConfig = do
   port         <- maybe 8091 read <$> lookupEnv "PORT"
   env          <- maybe Development read <$> lookupEnv "ENVIRONMENT"
+  secretToken  <- getEnv "WEBHOOK_SECRET_TOKEN"
   githubConfig <- Github.fetchConfig env
   loggerConfig <- Logger.fetchConfig env
   return $ Config
     { cPort = port
+    , cSecretToken = secretToken
     , cEnvironment = env
     , cGithub = githubConfig
     , cLogger = loggerConfig
